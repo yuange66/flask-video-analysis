@@ -11,7 +11,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-openai.api_key = "OPENAI_API_KEY"
+# openai.api_key = "OPENAI_API_KEY"
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def download_video(video_url, save_path):
     response = requests.get(video_url, stream=True)
