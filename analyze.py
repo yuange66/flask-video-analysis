@@ -3,9 +3,15 @@ import subprocess
 import requests
 import base64
 import openai
+import logging
 
-openai.api_key = "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"
-# todo key换成加密
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+openai.api_key = "OPENAI_API_KEY"
 
 def download_video(video_url, save_path):
     response = requests.get(video_url, stream=True)
@@ -57,17 +63,17 @@ def call_gpt4o_with_images(image_paths, prompt):
             temperature=0.2
         )
 
-        # ✅ 打印 token 使用情况
+        #  打印 token 使用情况
         usage = response.usage
-        print(f"  Token usage:")
-        print(f"  Prompt tokens : {usage.prompt_tokens}")
-        print(f"  Completion tokens : {usage.completion_tokens}")
-        print(f"  Total tokens : {usage.total_tokens}")
+        logger.info(f"  Token usage:")
+        logger.info(f"  Prompt tokens : {usage.prompt_tokens}")
+        logger.info(f"  Completion tokens : {usage.completion_tokens}")
+        logger.info(f"  Total tokens : {usage.total_tokens}")
 
         return response.choices[0].message.content
 
     except Exception as e:
-        print("OpenAI 请求失败：", e)
+        logger.error("OpenAI 请求失败：", e)
         raise e
 
 
