@@ -101,6 +101,28 @@ def compress_image(img_path, max_width=512):
     img.save(img_path, quality=70)  # 调低质量压缩
 
 
+def compress_images_to_target_size(image_paths, target_bytes=665600):
+    current_width = 512
+    quality = 70
+    min_width = 256
+    round_count = 0
+
+    while True:
+        total_bytes = sum(os.path.getsize(p) for p in image_paths)
+        logger.info(f"[PROTECT] Compression round {round_count}: total size = {total_bytes / 1024:.2f} KB")
+
+        if total_bytes <= target_bytes or current_width <= min_width:
+            logger.info(f"[PROTECT] Compression complete at width={current_width}, size={total_bytes / 1024:.2f} KB")
+            break
+
+        current_width = int(current_width * 0.85)  # 缩小比例
+        quality = max(quality - 5, 50)  # 降低质量但不低于50
+
+        for p in image_paths:
+            compress_image(p, max_width=current_width, quality=quality)
+
+        round_count += 1
+
 def process_video(video_url, temp_dir):
     video_path = os.path.join(temp_dir, "input.mp4")
 
@@ -117,6 +139,8 @@ def process_video(video_url, temp_dir):
 
     for frame_path in frame_paths:
         compress_image(frame_path)
+
+    compress_images_to_target_size(frame_paths, target_bytes=665600)
 
     # 步骤 3：调用 OpenAI 分析
     prompt = (
