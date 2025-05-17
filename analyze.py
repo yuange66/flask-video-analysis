@@ -77,6 +77,15 @@ def call_gpt4o_with_images(image_paths, prompt):
         logger.error("OpenAI 请求失败：", e)
         raise e
 
+from PIL import Image
+
+def compress_image(img_path, max_width=512):
+    img = Image.open(img_path)
+    if img.width > max_width:
+        ratio = max_width / img.width
+        img = img.resize((max_width, int(img.height * ratio)))
+    img.save(img_path, quality=70)  # 调低质量压缩
+
 
 def process_video(video_url, temp_dir):
     video_path = os.path.join(temp_dir, "input.mp4")
@@ -91,6 +100,9 @@ def process_video(video_url, temp_dir):
         fps=1.5,
         max_frames=20
     )
+
+    for frame_path in frame_paths:
+        compress_image(frame_path)
 
     # 步骤 3：调用 OpenAI 分析
     prompt = (
