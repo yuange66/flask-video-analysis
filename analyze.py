@@ -135,6 +135,7 @@ def process_video(video_url, temp_dir):
         "    }\n"
         "  ]\n"
         "}\n"
+        "Return only the raw JSON content. Do not add any explanation, heading, or text outside the JSON."
     )
 
     return call_gpt4o_with_images(frame_paths, prompt)
