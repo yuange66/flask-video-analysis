@@ -42,13 +42,29 @@ def extract_frames(video_path, output_dir, fps=1, max_frames=10):
 
 def call_gpt4o_with_images(image_paths, prompt):
     images = []
+    total_image_bytes = 0
+    total_estimated_tokens = 0
+
     for img_path in image_paths:
+        file_size = os.path.getsize(img_path)
+        total_image_bytes += file_size
+
         with open(img_path, "rb") as f:
-            img_data = base64.b64encode(f.read()).decode("utf-8")
-            images.append({
-                "type": "image_url",
-                "image_url": {"url": f"data:image/jpeg;base64,{img_data}"}
-            })
+            raw_bytes = f.read()
+            img_data = base64.b64encode(raw_bytes).decode("utf-8")
+
+        estimated_tokens = int(len(img_data) / 4)  # Base64大约每4字符=1 token
+        total_estimated_tokens += estimated_tokens
+
+        logger.info(f"[IMAGE] {os.path.basename(img_path)}: {file_size / 1024:.2f} KB → ~{estimated_tokens} tokens")
+
+        images.append({
+            "type": "image_url",
+            "image_url": {"url": f"data:image/jpeg;base64,{img_data}"}
+        })
+
+    logger.info(f"[SUMMARY] Total image payload: {total_image_bytes / 1024:.2f} KB")
+    logger.info(f"[SUMMARY] Estimated image tokens: ~{total_estimated_tokens}")
 
     messages = [
         {
@@ -64,12 +80,10 @@ def call_gpt4o_with_images(image_paths, prompt):
             temperature=0.2
         )
 
-        #  打印 token 使用情况
         usage = response.usage
-        logger.info(f"  Token usage:")
-        logger.info(f"  Prompt tokens : {usage.prompt_tokens}")
-        logger.info(f"  Completion tokens : {usage.completion_tokens}")
-        logger.info(f"  Total tokens : {usage.total_tokens}")
+        logger.info(f"[TOKENS] Prompt tokens : {usage.prompt_tokens}")
+        logger.info(f"[TOKENS] Completion tokens : {usage.completion_tokens}")
+        logger.info(f"[TOKENS] Total tokens : {usage.total_tokens}")
 
         return response.choices[0].message.content
 
