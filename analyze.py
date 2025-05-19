@@ -98,7 +98,7 @@ def compress_image(img_path, max_width=512,quality=70):
     if img.width > max_width:
         ratio = max_width / img.width
         img = img.resize((max_width, int(img.height * ratio)))
-    img.save(img_path, quality)  # 调低质量压缩
+    img.save(img_path, quality=quality)  # 调低质量压缩
 
 
 def compress_images_to_target_size(image_paths, target_bytes=665600):
