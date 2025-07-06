@@ -123,7 +123,7 @@ def compress_images_to_target_size(image_paths, target_bytes=665600):
 
         round_count += 1
 
-def process_video(video_url, temp_dir):
+def process_video(video_url, temp_dir,category,standard,type_):
     video_path = os.path.join(temp_dir, "input.mp4")
 
     # 步骤 1：下载视频
@@ -145,6 +145,10 @@ def process_video(video_url, temp_dir):
     # 步骤 3：调用 OpenAI 分析
     prompt = (
         "You are a professional ski coach. Analyze the skier's performance based on the following sequence of video frames.\n"
+        "The analysis context is:\n"
+        f"- Category: {category} (ski or snowboard), determines equipment, stance, and technique focus.\n"
+        f"- Standard: {standard} (general, aasi, basi, casi), determines the teaching standard and terminology you should apply.\n"
+        f"- Type: {type_} (flow or carving), determines the focus of the analysis (overall fluidity vs. edge control and carving technique).\n\n"
         "Please return your analysis in structured JSON format with the following fields:\n\n"
         "1. issue_count: The total number of **distinct issue types**, using technical category **codes** below:\n"
         "   0 - edge transitions\n"

@@ -14,6 +14,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 @app.route('/analyze', methods=['POST'])
 def analyze():
     logger.info("======== [START] Analyze Video Request ========")
@@ -23,8 +24,10 @@ def analyze():
 
     video_url = data.get("video_url")
     video_id = data.get("video_id", str(uuid.uuid4()))
+    category = data.get("category")
+    standard = data.get("standard")
+    type_ = data.get("type")
     logger.info(f"[INFO] video_url = {video_url}")
-    logger.info(f"[INFO] video_id = {video_id}")
 
     temp_dir = os.path.join("temp", video_id)
     os.makedirs(temp_dir, exist_ok=True)
@@ -32,7 +35,7 @@ def analyze():
 
     try:
         # 调用核心分析逻辑
-        result_text = process_video(video_url, temp_dir)
+        result_text = process_video(video_url, temp_dir, category, standard, type_)
 
         logger.info(f"[RESULT] GPT Analysis result (raw): {result_text}")
 
