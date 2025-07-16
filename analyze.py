@@ -124,7 +124,9 @@ def compress_images_to_target_size(image_paths, target_bytes=665600):
         round_count += 1
 
 def process_video(video_url, temp_dir,category,standard,type_):
-    video_path = os.path.join(temp_dir, "input.mp4")
+    from urllib.parse import urlparse
+    video_ext = os.path.splitext(urlparse(video_url).path)[-1] or ".mov"
+    video_path = os.path.join(temp_dir, f"input{video_ext}")
 
     # 步骤 1：下载视频
     download_video(video_url, video_path)
