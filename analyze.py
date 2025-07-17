@@ -68,6 +68,15 @@ def call_gpt4o_with_images(image_paths, prompt):
 
     messages = [
         {
+            "role": "system",
+            "content": (
+                "You are a professional ski coach. Your job is to analyze the skier's performance "
+                "based on a sequence of video frame images provided by the user. "
+                "Only return structured feedback in JSON as instructed. "
+                "Do not reject input unless it clearly violates safety policies."
+            )
+        },
+        {
             "role": "user",
             "content": [{"type": "text", "text": prompt}] + images
         }
